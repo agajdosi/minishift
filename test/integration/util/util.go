@@ -24,6 +24,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"bufio"
 
 	"bytes"
 	"syscall"
@@ -48,10 +49,21 @@ func runCommand(command string, commandPath string) (stdOut string, stdErr strin
 	cmd := exec.Command(path, commandArr...)
 
 	var outbuf, errbuf bytes.Buffer
-	cmd.Stdout = &outbuf
-	cmd.Stderr = &errbuf
+
+	outPipe, _ := cmd.StdoutPipe()
+	errPipe, _ := cmd.StderrPipe()
+
+	outScanner := bufio.NewScanner(outPipe)
+	errScanner := bufio.NewScanner(errPipe)
+
+	go scanPipe(outScanner, &outbuf, "stdout")
+	go scanPipe(errScanner, &errbuf, "stderr")
+
+	//cmd.Start()
+	//err := cmd.Wait()
 
 	err := cmd.Run()
+
 	stdOut = outbuf.String()
 	stdErr = errbuf.String()
 
@@ -68,6 +80,16 @@ func runCommand(command string, commandPath string) (stdOut string, stdErr strin
 	} else {
 		ws := cmd.ProcessState.Sys().(syscall.WaitStatus)
 		exitCode = ws.ExitStatus()
+	}
+
+	return
+}
+
+func scanPipe(scanner *bufio.Scanner, buffer *bytes.Buffer, stdType string) {
+	for scanner.Scan() {
+		str := scanner.Text()
+		fmt.Printf("%s>>> %s\n", stdType, str) //instead the logging into a file is needed to be implemented
+		buffer.WriteString(str + "\n")
 	}
 
 	return
