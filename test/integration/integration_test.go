@@ -238,6 +238,14 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^printing Docker daemon configuration to stdout$`,
 		catDockerConfigFile)
 
+	// executing in terminal
+	s.Step(`^user starts terminal instance$`,
+		util.StartTerminal)
+	s.Step(`^user closes terminal instance$`,
+		util.CloseTerminal)
+	s.Step(`^executing command "(.*)"$`,
+		util.ExecuteInShell)
+
 	s.BeforeSuite(func() {
 		testDir = setUp()
 		if runner.IsCDK() {
