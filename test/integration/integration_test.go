@@ -53,6 +53,8 @@ var (
 	testDir string
 	isoName string
 
+	preStartCommands util.StringSlice
+
 	// Godog options
 	godogFormat              string
 	godogTags                string
@@ -112,6 +114,8 @@ func TestMain(m *testing.M) {
 func parseFlags() {
 	flag.StringVar(&minishiftArgs, "minishift-args", "", "Arguments to pass to minishift")
 	flag.StringVar(&minishiftBinary, "binary", "", "Path to minishift binary")
+
+	flag.Var(&preStartCommands, "pre-start-commands", "Minishift commands to be run before the feature")
 
 	flag.StringVar(&testDir, "test-dir", "", "Path to the directory in which to execute the tests")
 
@@ -260,8 +264,16 @@ func FeatureContext(s *godog.Suite) {
 		util.LogMessage("info", "----- Preparing for feature -----")
 		if runner.IsCDK() {
 			runner.CDKSetup()
+			os.Setenv("MINISHIFT_ENABLE_EXPERIMENTAL", "y")
+			// runner.RunCommand(``)
+			// runner.RunCommand(`config set insecure-registry "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"`)
 		} else {
 			runner.RunCommand("addons list")
+		}
+		// --pre-start-commands 'config set extra-clusterup-flags -- "--image=brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/openshift3/ose --version=latest"' --pre-start-commands 'config set insecure-registry "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888"'
+		for index := range preStartCommands {
+			fmt.Println("Running command:", preStartCommands[index])
+			runner.RunCommand(preStartCommands[index])
 		}
 
 		util.LogMessage("info", fmt.Sprintf("----- Feature: %s -----", this.Name))

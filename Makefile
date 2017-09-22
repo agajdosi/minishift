@@ -32,6 +32,7 @@ ifeq ($(GOOS),windows)
 endif
 MINISHIFT_BINARY ?= $(GOPATH)/bin/minishift$(IS_EXE)
 GODOG_OPTS ?= ""
+CUSTOM_TEST_FLAGS ?= ""
 PACKAGES := go list ./... | grep -v /vendor
 SOURCE_DIRS = cmd pkg test
 
@@ -183,7 +184,7 @@ test: vendor $(ADDON_ASSET_FILE)
 .PHONY: integration
 integration: $(MINISHIFT_BINARY)
 	mkdir -p $(INTEGRATION_TEST_DIR)
-	go test -timeout 3600s $(REPOPATH)/test/integration --tags=integration -v -args --test-dir $(INTEGRATION_TEST_DIR) --binary $(MINISHIFT_BINARY) $(GODOG_OPTS)
+	go test -timeout 3600s $(REPOPATH)/test/integration --tags=integration -v -args --test-dir $(INTEGRATION_TEST_DIR) --binary $(MINISHIFT_BINARY) $(GODOG_OPTS) $(CUSTOM_TEST_FLAGS)
 
 .PHONY: fmt
 fmt:
