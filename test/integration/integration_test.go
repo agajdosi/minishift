@@ -243,6 +243,14 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^file from "(.*)" is downloaded into location "(.*)"$`,
 		downloadFileIntoLocation)
 
+	// executing in terminal
+	s.Step(`^user starts terminal instance$`,
+		util.StartTerminal)
+	s.Step(`^user closes terminal instance$`,
+		util.CloseTerminal)
+	s.Step(`^executing command "(.*)"$`,
+		util.ExecuteInShell)
+
 	s.BeforeSuite(func() {
 		testDir = setUp()
 		util.StartLog(testDir)
