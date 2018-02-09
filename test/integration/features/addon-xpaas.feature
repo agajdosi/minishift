@@ -18,10 +18,13 @@ which are then available in OpenShift to the user.
       """
 
   Scenario: Ping to Github.com
-     When executing "minishift ssh -- ping github.com" succeeds
+     When executing "minishift ssh -- ping -c 10 github.com" succeeds
 
-  Scenario: Lowering the MTU
+  Scenario: Edit hosts
      When executing "minishift ssh -- "echo '192.30.253.112 github.com' | sudo tee -a /etc/hosts"" succeeds
+
+  Scenario: Ping to Github.com after hosts
+     When executing "minishift ssh -- ping -c 10 github.com" succeeds
 
   Scenario Outline: User deploys, checks out and deletes several templates from XpaaS imagestream
    Given Minishift has state "Running"
