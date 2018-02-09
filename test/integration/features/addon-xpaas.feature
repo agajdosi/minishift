@@ -17,6 +17,10 @@ which are then available in OpenShift to the user.
       XPaaS OpenShift imagestream and templates installed
       """
 
+  Scenario: Lowering the MTU
+     When executing "minishift ssh -- sudo ifconfig eth0 mtu 1280" succeeds
+      And executing "minishift ssh -- sudo ifconfig eth1 mtu 1280" succeeds
+
   Scenario Outline: User deploys, checks out and deletes several templates from XpaaS imagestream
    Given Minishift has state "Running"
     When executing "oc new-app <template-name>" succeeds
