@@ -104,10 +104,6 @@ Feature: Basic
     minishift
     """
 
-  Scenario: Lowering the MTU
-     When executing "minishift ssh -- sudo ifconfig eth0 mtu 1280" succeeds
-      And executing "minishift ssh -- sudo ifconfig eth1 mtu 1280" succeeds
-
   Scenario: User can switch the current 'oc' context and return to 'minishift' context
     Given executing "oc config set-context dummy" succeeds
       And executing "oc config use-context dummy" succeeds
